@@ -63,6 +63,40 @@ class ResponseSynthesizer:
             # Default to first response
             return responses[0].content
     
+    def synthesize(self, responses: List[LLMResponse], 
+                   strategy: str = "best_of",
+                   weights: Optional[Dict[str, float]] = None) -> LLMResponse:
+        """
+        Synthesize multiple LLM responses into a single response.
+        
+        Args:
+            responses: List of LLM responses to synthesize
+            strategy: Synthesis strategy to use
+            weights: Optional weights for each model
+            
+        Returns:
+            Synthesized LLM response
+        """
+        # Get combined content using the combine method
+        combined_content = self.combine(responses, strategy, weights)
+        
+        # Calculate total tokens and cost
+        total_tokens = sum(r.total_tokens for r in responses)
+        total_cost = sum(r.cost for r in responses)
+        
+        # Create synthesized response
+        return LLMResponse(
+            content=combined_content,
+            model="synthesized",
+            total_tokens=total_tokens,
+            cost=total_cost,
+            metadata={
+                "synthesis_strategy": strategy,
+                "source_models": [r.model for r in responses],
+                "response_count": len(responses)
+            }
+        )
+    
     def _weighted_consensus(self, responses: List[LLMResponse], 
                           weights: Optional[Dict[str, float]] = None) -> str:
         """Combine responses using weighted consensus."""

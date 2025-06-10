@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # WebSocket bridge for network access
+  mcp-websocket-bridge:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-orchestrator:latest
+    container_name: mcp-websocket-bridge
+    ports:
+      - "8765:8765"  # WebSocket port
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONUNBUFFERED=1
+    command: python /app/websocket_bridge.py
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost', 8765)); s.close()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # REST API wrapper for HTTP access
+  mcp-rest-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-orchestrator:latest
+    container_name: mcp-rest-api
+    ports:
+      - "8080:5000"  # REST API port
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONUNBUFFERED=1
+    command: python /app/rest_api.py
+    volumes:
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Standard MCP server (for stdio access)
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-orchestrator:latest
+    container_name: mcp-server
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: python -m src.mcp_server
+    volumes:
+      - ./logs:/app/logs
+    restart: "no"  # MCP servers are typically on-demand
+
+networks:
+  default:
+    name: mcp-network
+    driver: bridge
