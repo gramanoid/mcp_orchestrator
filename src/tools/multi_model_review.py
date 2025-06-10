@@ -21,9 +21,9 @@ class MultiModelReviewTool(BaseTool):
         super().__init__(orchestrator)
         self.name = "multi_model_review"
         self.description = (
-            "Get multiple AI perspectives on any task. Forces use of Claude, "
-            "Gemini, and GPT-4 in parallel, even for simple queries. "
-            "Higher cost but maximum insight."
+            "Get Gemini 2.5 Pro and O3's perspective on Claude's response. "
+            "Use this to validate, enhance, or get alternative viewpoints on "
+            "what Claude has already provided. Higher cost but additional insights."
         )
     
     def get_name(self) -> str:

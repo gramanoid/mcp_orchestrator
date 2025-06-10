@@ -53,9 +53,8 @@ class ProgressiveDeepDiveStrategy(BaseOrchestrationStrategy):
         Execute the Progressive Deep Dive strategy.
         
         Stages:
-        1. Quick assessment with Claude Sonnet
-        2. Deep analysis with Claude Opus if needed
-        3. Specialized expertise from external models if required
+        1. Quick assessment with Gemini 2.5 Pro
+        2. Deep analysis with O3 if needed for architecture/design
         """
         logger.info("Executing Progressive Deep Dive strategy")
         

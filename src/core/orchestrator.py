@@ -16,14 +16,12 @@ from src.core.task import Task, TaskAnalyzer, TaskAnalysis, TaskType, Complexity
 from src.core.thinking_modes import ThinkingMode, get_thinking_config, parse_thinking_mode
 from src.core.dynamic_context import DynamicContextManager, ToolResponse, RequestStatus
 from src.adapters.base import BaseLLMAdapter, LLMResponse, LLMConfig
-from src.adapters.claude_adapter import ClaudeAdapter
-from src.adapters.claude_direct import ClaudeDirectAdapter
+# Claude adapters removed - user is already talking to Claude
 from src.adapters.gemini_adapter import GeminiAdapter
 from src.adapters.o3_adapter import O3Adapter
 from src.adapters.openrouter_adapter import OpenRouterAdapter
 from src.strategies.base import BaseOrchestrationStrategy
-from src.strategies.max_quality_council import MaxQualityCouncilStrategy
-from src.strategies.progressive_deep_dive import ProgressiveDeepDiveStrategy
+from src.strategies.external_enhancement import ExternalEnhancementStrategy
 from src.prompts import tool_prompts
 from src.prompts.model_specific_prompts import get_model_prompt, suggest_model_for_task
 
@@ -241,13 +239,16 @@ class MCPOrchestrator:
         self.adapters: Dict[str, BaseLLMAdapter] = {}
         self._initialize_adapters()
         
-        # Initialize strategies
+        # Initialize strategies - only external enhancement
+        external_strategy = ExternalEnhancementStrategy(self.adapters, self.synthesizer)
         self.strategies: Dict[str, BaseOrchestrationStrategy] = {
-            "max_quality_council": MaxQualityCouncilStrategy(self.adapters, self.synthesizer),
-            "progressive_deep_dive": ProgressiveDeepDiveStrategy(self.adapters, self.synthesizer)
+            "external_enhancement": external_strategy,
+            # Keep old names for backward compatibility
+            "max_quality_council": external_strategy,
+            "progressive_deep_dive": external_strategy
         }
         
-        self.default_strategy = config.get("orchestration", {}).get("default_strategy", "progressive_deep_dive")
+        self.default_strategy = "external_enhancement"
         
         # Statistics
         self._request_count = 0
@@ -256,12 +257,8 @@ class MCPOrchestrator:
     
     def _initialize_adapters(self):
         """Initialize all LLM adapters."""
-        # Claude direct adapter - uses actual Claude instance
-        self.adapters["claude_direct"] = ClaudeDirectAdapter()
-        
-        # Keep legacy adapters for compatibility
-        self.adapters["claude_opus"] = self.adapters["claude_direct"]  # Alias
-        self.adapters["claude_sonnet"] = self.adapters["claude_direct"]  # Alias
+        # NO Claude adapters - the user is already talking to Claude in Claude Code
+        # The orchestrator only manages external models (Gemini, O3) for enhancement
         
         # External adapters via OpenRouter
         openrouter_key = self.config.get("api_keys", {}).get("openrouter")
@@ -491,7 +488,12 @@ class MCPOrchestrator:
         """Add usage summary line to the response."""
         # Extract model usage from metadata
         strategy = response.metadata.get("orchestration", {}).get("strategy", "unknown")
-        models_used = response.metadata.get("strategy", {}).get("models_consulted", [])
+        # Handle both string and dict strategy metadata
+        strategy_meta = response.metadata.get("strategy", {})
+        if isinstance(strategy_meta, str):
+            models_used = response.metadata.get("models_used", [])
+        else:
+            models_used = strategy_meta.get("models_consulted", [])
         
         # Create usage summary
         if not models_used:

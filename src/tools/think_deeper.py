@@ -36,9 +36,9 @@ class ThinkDeeperTool(BaseTool):
     
     def get_description(self) -> str:
         return (
-            "Extended reasoning and deep analysis. Challenges assumptions, "
-            "explores edge cases, and provides alternative solutions using "
-            "multi-model synthesis."
+            "Ask Gemini 2.5 Pro and O3 to think deeper about Claude's analysis. "
+            "They will challenge assumptions, explore edge cases, and provide "
+            "alternative perspectives to enhance Claude's response."
         )
     
     def get_input_schema(self) -> Dict[str, Any]:

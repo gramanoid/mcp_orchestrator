@@ -1,8 +1,10 @@
 """
-Direct Claude adapter that uses the actual Claude instance.
+Direct Claude adapter - uses the Claude instance running in Claude Code.
 
-This adapter provides direct integration with Claude running in Claude Code,
-providing real AI-powered responses for all tasks.
+This adapter represents ME - the Claude model that's currently running in Claude Code.
+I can operate as both Claude Opus (deep reasoning) and Claude Sonnet (fast responses)
+depending on the task requirements. This provides zero-latency, zero-cost access to
+Claude's capabilities since I'm already running.
 """
 
 from typing import Dict, List, Optional, Any

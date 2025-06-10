@@ -38,9 +38,9 @@ class CodeReviewTool(BaseTool):
     
     def get_description(self) -> str:
         return (
-            "Professional code review with multi-model analysis. "
-            "Identifies bugs, security issues, performance problems, "
-            "and code quality issues with severity ratings."
+            "Get Gemini 2.5 Pro and O3 to review code. "
+            "They identify additional bugs, security issues, and improvements "
+            "that complement Claude's analysis."
         )
     
     def get_input_schema(self) -> Dict[str, Any]:
