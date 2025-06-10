@@ -1,11 +1,17 @@
 # MCP Orchestrator
 
-A sophisticated Model Context Protocol (MCP) server that orchestrates multiple LLMs for enhanced reasoning capabilities. Following MCP best practices for secure, scalable deployment.
+A sophisticated Model Context Protocol (MCP) server that orchestrates external AI models (Gemini 2.5 Pro and O3) to enhance Claude's responses with additional perspectives and insights. Following MCP best practices for secure, scalable deployment.
+
+## Architecture Overview
+
+When you interact with Claude in Claude Code, this MCP server allows Claude to consult external models:
+- **Gemini 2.5 Pro** (via OpenRouter): Provides alternative analysis and perspectives
+- **O3** (via OpenAI): Offers architectural and system design insights
 
 ## Features
 
-- **Multi-Model Orchestration**: Coordinate Claude, Gemini, and other models
-- **Advanced Reasoning Strategies**: Progressive deep dive and consensus-based council approaches
+- **External Model Enhancement**: Get perspectives from Gemini 2.5 Pro and O3 to supplement Claude's responses
+- **Advanced Reasoning Strategies**: External enhancement and multi-model council approaches
 - **MCP-Compliant**: Full adherence to Model Context Protocol standards
 - **Secure by Design**: Non-root execution, encrypted storage, API key protection
 - **Docker Support**: Production-ready containerization with health checks
@@ -16,14 +22,15 @@ A sophisticated Model Context Protocol (MCP) server that orchestrates multiple L
 ### 1. Clone and Configure
 
 ```bash
-git clone <repository>
+git clone https://github.com/gramanoid/mcp_orchestrator
 cd mcp_orchestrator
 
 # Copy environment template
 cp .env.example .env
 
-# Edit .env with your API key
-# OPENROUTER_API_KEY=your_api_key_here
+# Edit .env with your API keys
+# OPENROUTER_API_KEY=your_openrouter_api_key_here
+# OPENAI_API_KEY=your_openai_api_key_here (for O3)
 ```
 
 ### 2. Deploy with Docker
@@ -41,22 +48,32 @@ cp .env.example .env
 
 ### 3. Use with MCP Clients
 
-The orchestrator exposes the following tools via MCP:
+The orchestrator exposes 13 MCP tools that allow Claude to get external perspectives:
 
-- `reason`: Execute reasoning tasks with configurable strategies
-- `get_status`: Check orchestrator health and statistics
+- `orchestrate_task`: Get external model perspectives on any task
+- `analyze_task`: Analyze task complexity with external models
+- `query_specific_model`: Query Gemini 2.5 Pro or O3 directly
+- `code_review`: Get external code review perspectives
+- `think_deeper`: Request deeper analysis from external models
+- `multi_model_review`: Get multiple external perspectives
+- `comparative_analysis`: Compare solutions using external models
+- And more tools for specific use cases
 
 ## Architecture
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  MCP Client │────▶│ Orchestrator │────▶│  LLM APIs   │
-└─────────────┘     └──────────────┘     └─────────────┘
-                           │
-                    ┌──────┴───────┐
-                    │  Strategies  │
-                    └──────────────┘
+┌──────────┐     ┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+│   User   │────▶│Claude (You) │────▶│MCP Orchestra │────▶│External Models│
+└──────────┘     │in Claude Code│     │   tor        │     │Gemini 2.5 Pro│
+                 └─────────────┘     └──────────────┘     │     O3       │
+                                                           └──────────────┘
 ```
+
+The flow:
+1. User asks Claude a question
+2. Claude (in Claude Code) can use MCP tools to get external perspectives
+3. MCP Orchestrator queries Gemini 2.5 Pro and/or O3
+4. External insights enhance Claude's response to the user
 
 ## Configuration
 
@@ -64,7 +81,8 @@ The orchestrator exposes the following tools via MCP:
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `OPENROUTER_API_KEY` | Your OpenRouter API key | Required |
+| `OPENROUTER_API_KEY` | Your OpenRouter API key (for Gemini 2.5 Pro) | Required |
+| `OPENAI_API_KEY` | Your OpenAI API key (for O3) | Required |
 | `MCP_LOG_LEVEL` | Logging level | INFO |
 | `MCP_MAX_COST_PER_REQUEST` | Max cost per request ($) | 5.0 |
 | `MCP_DAILY_LIMIT` | Daily spending limit ($) | 100.0 |
@@ -75,15 +93,15 @@ Edit `config/config.yaml` to customize:
 
 ```yaml
 strategies:
-  progressive_deep_dive:
-    max_depth: 3
-    initial_model: "anthropic/claude-3-opus"
+  external_enhancement:
+    models:
+      - "google/gemini-2.5-pro-preview"  # via OpenRouter
+      - "o3"  # via OpenAI
     
   max_quality_council:
     models:
-      - "anthropic/claude-3-opus"
-      - "google/gemini-pro"
-      - "openai/gpt-4"
+      - "google/gemini-2.5-pro-preview"
+      - "o3"
     require_consensus: true
 ```
 
