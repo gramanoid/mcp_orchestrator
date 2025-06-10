@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mcp-orchestrator": {
+      "command": "python",
+      "args": ["-m", "src.mcp_server"],
+      "cwd": "/home/alexgrama/GitHome/mcp_orchestrator",
+      "env": {
+        "PYTHONPATH": "/home/alexgrama/GitHome/mcp_orchestrator"
+      }
+    }
+  }
+}

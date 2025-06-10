@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  mcp-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-orchestrator:enhanced
+    container_name: mcp-orchestrator-enhanced
+    environment:
+      # API Keys - Set these in .env file
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-not_needed_for_claude_direct}
+      
+      # Configuration
+      - MCP_LOG_LEVEL=INFO
+      - PYTHONUNBUFFERED=1
+      
+      # Cost limits
+      - MAX_COST_PER_REQUEST=5.0
+      - DAILY_COST_LIMIT=100.0
+      
+    volumes:
+      # Mount config directory
+      - ./config:/app/config:ro
+      
+      # Mount logs directory
+      - ./logs:/app/logs
+      
+      # Mount prompts (for easy updates)
+      - ./src/prompts:/app/src/prompts:ro
+      
+      # For analyzing local codebases (optional)
+      - ${PROJECT_PATH:-/tmp}:/workspace:ro
+      
+    # MCP servers don't expose ports - they use stdio
+    stdin_open: true
+    tty: true
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      
+    # Security
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/data
+
+  # Optional: Redis for caching (if implemented)
+  redis:
+    image: redis:7-alpine
+    container_name: mcp-redis
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    profiles:
+      - with-cache
+
+volumes:
+  redis_data:

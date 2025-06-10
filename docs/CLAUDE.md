@@ -1,0 +1,1 @@
+/home/mcp/.config/claude/CLAUDE_GLOBAL.md

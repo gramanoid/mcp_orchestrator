@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source code
+COPY src/ ./src/
+COPY mcp_server_enhanced.py .
+COPY config/ ./config/
+
+# Create non-root user
+RUN useradd -m -u 1000 mcp && chown -R mcp:mcp /app
+USER mcp
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD python -c "import sys; sys.exit(0)"
+
+# Run MCP server
+CMD ["python", "mcp_server_enhanced.py"]

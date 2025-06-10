@@ -1,0 +1,84 @@
+# MCP Orchestrator Configuration Example
+# Rename this file to config.yaml to use it
+
+# Orchestration settings
+orchestration:
+  # Default strategy: "progressive_deep_dive" or "max_quality_council"
+  default_strategy: progressive_deep_dive
+  
+  # Quality mode affects model selection
+  # Options: "maximum", "balanced", "efficient"
+  quality_mode: balanced
+  
+  # Strategy-specific settings
+  strategies:
+    max_quality_council:
+      # Minimum task complexity to activate (0.0-1.0)
+      activation_threshold: 0.8
+      # Timeout for parallel model queries (seconds)
+      parallel_timeout: 60
+      # How to combine responses: "weighted_consensus", "best_of", "merge"
+      synthesis_method: weighted_consensus
+    
+    progressive_deep_dive:
+      # Starting model for quick assessment
+      initial_model: claude_sonnet
+      # Quality threshold to escalate to next stage (0.0-1.0)
+      escalation_threshold: 0.6
+
+# Model-specific settings
+models:
+  # Claude internal models
+  claude:
+    opus:
+      max_tokens: 8192
+      thinking_mode: deep  # "fast" or "deep"
+    sonnet:
+      max_tokens: 4096
+      mode: fast
+  
+  # Gemini via OpenRouter
+  gemini_polyglot:
+    # Maximum thinking tokens to use (up to 32000)
+    max_thinking_tokens: 32000
+    # Default thinking tokens for standard requests
+    default_thinking_tokens: 16000
+    # Temperature for code generation
+    temperature: 0.7
+  
+  # O3 via OpenRouter
+  o3_architect:
+    # Default reasoning depth: "low", "medium", "high", "maximum"
+    default_reasoning: high
+    # Temperature for architectural design
+    temperature: 0.5
+
+# Cost management
+cost_management:
+  # Maximum cost per single request (USD)
+  max_cost_per_request: 5.0
+  # Daily spending limit (USD)
+  daily_limit: 100.0
+  # Warning threshold (0.0-1.0 of daily limit)
+  warning_threshold: 0.8
+
+# Model preferences for specific task types
+model_preferences:
+  # Preferred models for different task types
+  code_editing: gemini_polyglot
+  architecture: o3_architect
+  bug_fixes: gemini_polyglot
+  documentation: claude_opus
+  general: claude_opus
+
+# Logging configuration
+logging:
+  # Log level: DEBUG, INFO, WARNING, ERROR
+  level: INFO
+  # Log format
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+# Note: API keys should be set via:
+# 1. Environment variable: OPENROUTER_API_KEY
+# 2. Or using the ConfigManager.save_api_key() method
+# Do not store API keys directly in this file!

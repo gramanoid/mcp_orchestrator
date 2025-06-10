@@ -1,0 +1,87 @@
+# Docker Compose configuration for MCP Orchestrator
+
+services:
+  mcp-orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-orchestrator:latest
+    container_name: mcp-orchestrator
+    
+    # For testing, run the simple server
+    command: python -m src.mcp_server_simple
+    stdin_open: true
+    tty: true
+    
+    # Environment variables
+    environment:
+      # API keys should be provided securely
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - MCP_LOG_LEVEL=${MCP_LOG_LEVEL:-INFO}
+      - MCP_MAX_COST_PER_REQUEST=${MCP_MAX_COST_PER_REQUEST:-5.0}
+      - MCP_DAILY_LIMIT=${MCP_DAILY_LIMIT:-100.0}
+      - PYTHONUNBUFFERED=1
+    
+    # Volume mounts for persistence
+    volumes:
+      # Configuration persistence
+      - mcp-config:/home/mcp/.config/mcp_orchestrator
+      # Logs persistence
+      - mcp-logs:/app/logs
+      # Mount local config for testing
+      - ./config:/app/config:ro
+    
+    # Security settings
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/mcp/.cache
+    
+    # Resource limits
+    mem_limit: 2g
+    cpus: '2.0'
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    
+    # Restart policy - don't auto-restart as MCP servers are on-demand
+    restart: "no"
+    
+    # Logging configuration
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # Test container for development
+  mcp-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: mcp-orchestrator:latest
+    container_name: mcp-test
+    command: python test_simple.py
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./config:/app/config:ro
+    profiles:
+      - test
+
+# Named volumes for data persistence
+volumes:
+  mcp-config:
+    driver: local
+  mcp-logs:
+    driver: local

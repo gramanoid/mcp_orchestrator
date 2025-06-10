@@ -1,0 +1,20 @@
+[Unit]
+Description=MCP Orchestrator Server
+After=network.target
+
+[Service]
+Type=simple
+User=alexgrama
+WorkingDirectory=/home/alexgrama/GitHome/mcp_orchestrator
+Environment="PATH=/home/alexgrama/.local/bin:/usr/bin"
+Environment="PYTHONPATH=/home/alexgrama/GitHome/mcp_orchestrator/src"
+ExecStart=/usr/bin/python3 /home/alexgrama/GitHome/mcp_orchestrator/mcp_server_enhanced.py
+Restart=always
+RestartSec=10
+
+# Logging
+StandardOutput=append:/home/alexgrama/GitHome/mcp_orchestrator/logs/mcp-server.log
+StandardError=append:/home/alexgrama/GitHome/mcp_orchestrator/logs/mcp-server-error.log
+
+[Install]
+WantedBy=multi-user.target
