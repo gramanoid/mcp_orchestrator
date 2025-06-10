@@ -138,6 +138,12 @@ personal/
 TODO.md
 NOTES.md
 
+# Claude Desktop files
+CLAUDE.md
+claude.md
+.claude/CLAUDE.md
+**/CLAUDE.md
+
 # Archives and backups
 *.zip
 *.tar
