@@ -1,5 +1,7 @@
 # 🚀 MCP Orchestrator - Complete Features List
 
+**Important**: The MCP Orchestrator uses ONLY external models (Gemini 2.5 Pro and O3). It does NOT orchestrate Claude since users are already interacting with Claude directly.
+
 ## ✅ All Integrated Features Available via MCP
 
 ### 1. **Core Orchestration Tools** 
@@ -16,17 +18,16 @@ These are the tools you can call directly from Claude Code:
 - Includes usage summary in response
 - Example: "Use orchestrate with max_quality_council strategy to review this code"
 
-#### 🤖 `multi_model_review` ⭐ NEW
-- **Forces** multiple models (Claude + Gemini + GPT-4) even for simple tasks
-- Ideal when you want multiple perspectives
+#### 🤖 `multi_model_review`
+- Gets perspectives from multiple external models (Gemini + O3)
+- Ideal when you want diverse external insights
 - Parameters: task, code_context, focus_areas
 - Example: "Use multi_model_review to check if this is secure: password='123'"
 
-#### ⚡ `quick_claude` ⭐ NEW
-- **Forces** Claude-only for maximum speed
-- Supports all thinking modes (minimal to max)
-- Parameters: task, code_context, thinking_mode
-- Example: "Use quick_claude with minimal thinking to explain variables"
+#### ⚡ `quick_claude` (DEPRECATED)
+- This tool is deprecated and returns an error
+- Users already have direct access to Claude
+- No need to "orchestrate" Claude when you're already using Claude
 
 #### 🔍 `review_code`
 - Professional code review with severity levels
@@ -48,17 +49,17 @@ These are the tools you can call directly from Claude Code:
 
 ### 2. **Enhanced Features Integrated**
 
-#### ✅ **Thinking Modes** (From Beehive)
+#### ✅ **Thinking Modes**
 - Natural language control: "use minimal/low/medium/high/max thinking"
 - Token budgets: 128 → 2,048 → 8,192 → 16,384 → 32,768
 - Automatic mode selection based on task complexity
 - Cost optimization through intelligent token management
 
-#### ✅ **Usage Summary** ⭐ NEW
+#### ✅ **Usage Summary**
 Every response now ends with:
 ```
 ---
-🤖 Models: claude-direct, google/gemini-2.5-pro-preview, openai/gpt-4.1 | 💰 Cost: $0.0023 | 📊 Strategy: max_quality_council
+🤖 Models: google/gemini-2.5-pro-preview, o3 | 💰 Cost: $0.0023 | 📊 Strategy: external_enhancement
 ```
 
 #### ✅ **Dynamic Context Requests** (From Beehive)
@@ -74,10 +75,16 @@ Every response now ends with:
 - Improves response quality and relevance
 
 #### ✅ **Multi-Model Orchestration**
-- **Progressive Deep Dive**: Claude-only for efficiency
-- **Max Quality Council**: Parallel consultation of multiple models
+- **External Enhancement**: Single external model for efficiency
+- **Max Quality Council**: Parallel consultation of multiple external models
 - Automatic strategy selection based on complexity
 - Manual override available
+
+#### ✅ **Network Bridges** (NEW)
+- REST API on port 5050 for HTTP integration
+- WebSocket on port 8765 for real-time communication
+- Docker Compose configuration for easy deployment
+- Support for any programming language or platform
 
 #### ✅ **Cost Management**
 - Per-request cost limits
@@ -87,24 +94,26 @@ Every response now ends with:
 
 ### 3. **Available Models**
 
-#### Currently Active:
-- ✅ **claude_direct**: Uses me (Claude) directly - no API calls
+#### External Models Only:
 - ✅ **gemini_pro**: Google Gemini 2.5 Pro via OpenRouter
-- ✅ **gpt4_fallback**: GPT-4.1 via OpenRouter
-- ⚠️ **o3_architect**: O3 via OpenAI (requires valid API key)
+- ✅ **o3_architect**: O3 via OpenAI (requires OPENAI_API_KEY)
+
+#### NOT Available:
+- ❌ **claude_direct**: Removed - users already have Claude
+- ❌ **Any Claude models**: Not needed since you're using Claude directly
 
 ### 4. **How to Use Each Feature**
 
-#### Force Multi-Model Review (NEW):
+#### Get External Model Review:
 ```
 "Use multi_model_review to analyze this authentication code"
-# Forces: Claude + Gemini + GPT-4 in parallel
+# Gets: Gemini + O3 perspectives (external models only)
 ```
 
-#### Force Quick Claude (NEW):
+#### Direct Model Query:
 ```
-"Use quick_claude with minimal thinking to format this code"
-# Forces: Claude-only with 128 token budget
+"Use query_specific_model with gemini_pro to explain React hooks"
+# Queries: Specific external model directly
 ```
 
 #### Natural Thinking Control:
@@ -121,11 +130,12 @@ Every response now ends with:
 
 ### 5. **What Makes This Special**
 
-1. **Explicit Control**: You decide when to use multiple models
-2. **Transparent Usage**: Every response shows exactly what was used
-3. **Cost Visibility**: See the cost of each request
-4. **Flexible Strategies**: From quick Claude-only to full multi-model council
-5. **Smart Defaults**: Automatic optimization when you don't specify
+1. **External Models Only**: Exclusively uses Gemini and O3, not Claude
+2. **Network Accessible**: REST API and WebSocket bridges for any app
+3. **Transparent Usage**: Every response shows exactly what was used
+4. **Cost Visibility**: See the cost of each request
+5. **Flexible Strategies**: From single model to multi-model council
+6. **Bug-Free**: All known issues fixed (ResponseSynthesizer, lifecycle)
 
 ### 6. **Quick Test Commands**
 
@@ -133,11 +143,11 @@ Every response now ends with:
 # See all available tools and models
 "Use orchestrator_status"
 
-# Force multi-model on simple task (proves it works)
+# Get external perspectives on simple task
 "Use multi_model_review to check if x=1 is good code"
 
-# Quick Claude with minimal thinking
-"Use quick_claude with minimal thinking to explain loops"
+# Query specific external model
+"Use query_specific_model with o3_architect to design a cache system"
 
 # Let system decide (smart selection)
 "Use orchestrate to review this security code: password='admin'"
@@ -145,14 +155,16 @@ Every response now ends with:
 
 ## 🎯 Summary
 
-YES, the MCP has ALL the features we integrated:
-- ✅ All 7 orchestration tools
+The MCP Orchestrator is fully operational with:
+- ✅ All orchestration tools (except deprecated quick_claude)
+- ✅ External models only (Gemini 2.5 Pro + O3)
+- ✅ Network bridges (REST API + WebSocket)
 - ✅ Thinking modes with natural language
 - ✅ Usage summary on every response
 - ✅ Dynamic context requests
 - ✅ Specialized prompts
-- ✅ Multi-model orchestration
 - ✅ Cost tracking and limits
 - ✅ Pre-commit validation
+- ✅ All bugs fixed
 
-Everything is accessible through the `mcp-orchestrator` MCP in Claude Code!
+Everything is accessible through the `mcp-orchestrator` MCP or via network bridges!

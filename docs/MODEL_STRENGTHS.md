@@ -1,11 +1,14 @@
-# AI Model Strengths and Optimal Use Cases
+# External AI Model Strengths and Optimal Use Cases
 
-## Model Capabilities Overview
+**Note**: The MCP Orchestrator uses ONLY external models (Gemini 2.5 Pro and O3). Claude models are not orchestrated since users already interact with Claude directly.
 
-### 1. **Gemini 2.5 Pro (Flash)**
+## Available External Models
+
+### 1. **Gemini 2.5 Pro** (via OpenRouter)
+- **Model ID**: `google/gemini-2.5-pro-preview`
 - **Context Window**: 1 Million tokens (industry-leading)
 - **Thinking Tokens**: 32,768 tokens
-- **Cost**: $0.075/1M input, $0.30/1M output, $0.015/1M thinking
+- **Cost**: Via OpenRouter pricing
 - **Strengths**:
   - **Massive Context**: Can analyze entire codebases in a single prompt
   - **Code Generation**: Excellent at generating boilerplate and repetitive code
@@ -19,9 +22,10 @@
   - Finding inconsistencies across files
   - Generating test suites for entire modules
 
-### 2. **O3-mini**
+### 2. **O3** (via OpenAI)
+- **Model ID**: `o3`
 - **Context Window**: 128K tokens
-- **Cost**: $15/1M input, $60/1M output
+- **Cost**: Via OpenAI pricing
 - **Strengths**:
   - **System Architecture**: Exceptional at high-level design
   - **Trade-off Analysis**: Weighs complex technical decisions
@@ -36,97 +40,63 @@
   - API contract design
   - Performance optimization strategies
 
-### 3. **Claude 3 Opus**
-- **Context Window**: 200K tokens
-- **Cost**: $15/1M input, $75/1M output
-- **Strengths**:
-  - **Deep Reasoning**: Complex problem-solving and debugging
-  - **Code Understanding**: Exceptional at understanding intent
-  - **Bug Analysis**: Root cause analysis of complex issues
-  - **Algorithm Design**: Novel solutions to complex problems
-  - **Security Analysis**: Identifies subtle vulnerabilities
-- **Best For**:
-  - Complex debugging
-  - Algorithm optimization
-  - Security audits
-  - Code review for critical systems
-  - Understanding legacy code
-  - Solving "impossible" bugs
+## Why Only External Models?
 
-### 4. **Claude 3.5 Sonnet**
-- **Context Window**: 200K tokens
-- **Cost**: $3/1M input, $15/1M output
-- **Strengths**:
-  - **Balanced Performance**: Great quality at lower cost
-  - **Code Writing**: Clean, idiomatic code generation
-  - **Refactoring**: Intelligent code improvements
-  - **Testing**: Comprehensive test case generation
-  - **Documentation**: Clear, concise explanations
-- **Best For**:
-  - Day-to-day coding tasks
-  - Code refactoring
-  - Writing unit tests
-  - Code documentation
-  - Quick prototypes
-  - Feature implementation
+The MCP Orchestrator exclusively uses external models because:
 
-## Optimal Task Routing Strategy
+1. **You're Already Using Claude**: When using Claude Code or Claude Desktop, you have direct access to Claude's capabilities
+2. **Complementary Perspectives**: External models provide different viewpoints and approaches
+3. **No Redundancy**: There's no need to "orchestrate" Claude when Claude is your primary interface
+4. **Enhanced Value**: External models add unique strengths that complement Claude's responses
+
+## Optimal External Model Usage
 
 ### By Task Type:
 
 1. **Architecture & Design**
-   - Primary: O3-mini
-   - Secondary: Claude Opus (for complex trade-offs)
-   - Tertiary: Gemini (for large codebase impact analysis)
+   - Use O3 for system design and architectural decisions
+   - Use Gemini for analyzing impact across large codebases
 
 2. **Large-Scale Refactoring**
-   - Primary: Gemini 2.5 Pro
-   - Secondary: Claude Sonnet (for specific file edits)
-   - Tertiary: O3-mini (for architectural validation)
+   - Use Gemini 2.5 Pro for its massive context window
+   - Use O3 for architectural validation of changes
 
-3. **Complex Debugging**
-   - Primary: Claude Opus
-   - Secondary: Gemini (for codebase-wide impact)
-   - Tertiary: Claude Sonnet (for fixes)
+3. **Code Analysis**
+   - Use Gemini for pattern detection across files
+   - Use O3 for design pattern recommendations
 
-4. **Security Analysis**
-   - Primary: Claude Opus
-   - Secondary: O3-mini (for system-level vulnerabilities)
-   - Tertiary: Gemini (for pattern detection across files)
+4. **Performance Optimization**
+   - Use O3 for strategy and architectural improvements
+   - Use Gemini for codebase-wide analysis
 
-5. **Performance Optimization**
-   - Primary: O3-mini (strategy)
-   - Secondary: Claude Opus (implementation)
-   - Tertiary: Gemini (codebase-wide analysis)
+5. **Code Generation**
+   - Use Gemini for repetitive patterns and boilerplate
+   - Use O3 for complex architectural scaffolding
 
-6. **Code Generation**
-   - Primary: Claude Sonnet (quality/cost balance)
-   - Secondary: Gemini (for repetitive patterns)
-   - Tertiary: Claude Opus (for complex logic)
+## When to Use External Models via MCP
 
-## Cost-Benefit Analysis
-
-### When to Use Each Model:
-
-**Use Gemini 2.5 Pro when:**
+### Use Gemini 2.5 Pro when:
 - Analyzing > 50 files
 - Need to maintain consistency across codebase
 - Performing large migrations
-- Cost-sensitive but need large context
+- Want a different perspective on large-scale changes
 
-**Use O3-mini when:**
-- Making architecture decisions worth > $10K in developer time
-- Designing systems that will last > 1 year
-- Need to prevent costly mistakes early
+### Use O3 when:
+- Making critical architecture decisions
+- Designing systems for long-term use
+- Need expert system design perspective
+- Want architectural validation
 
-**Use Claude Opus when:**
-- Debugging has taken > 4 hours
-- Security is critical
-- Problem seems "impossible"
-- Cost of failure is high
+### Use Both Models (Max Quality Council) when:
+- Critical decisions requiring consensus
+- Complex problems needing multiple perspectives
+- High-stakes changes where diverse input is valuable
 
-**Use Claude Sonnet when:**
-- Regular development tasks
-- Need good quality at reasonable cost
-- Tasks are well-defined
-- Quick iterations needed
+## Integration with Claude
+
+The external models complement your Claude interaction:
+1. **Claude provides**: Primary response, deep reasoning, nuanced understanding
+2. **Gemini adds**: Large-scale analysis, pattern recognition
+3. **O3 adds**: Architectural insights, system design expertise
+
+Together, they provide a comprehensive view of any problem.

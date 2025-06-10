@@ -1,6 +1,8 @@
 # MCP Orchestrator Tools Status
 
-## ✅ All Tools Enhanced and Working
+## ✅ All Tools Working with External Models Only
+
+**Important**: The orchestrator uses ONLY external models (Gemini 2.5 Pro and O3). It does NOT use Claude models since users already interact with Claude directly.
 
 ### Core Orchestration Tools
 
@@ -54,11 +56,10 @@
    - Finds incomplete implementations
    - Security-focused analysis
 
-9. **quick_claude** ✅
-   - Claude-only for speed
-   - Minimal thinking mode
-   - Zero additional cost
-   - Best for simple tasks
+9. **quick_claude** ❌ DEPRECATED
+   - This tool returns an error message
+   - Users already have direct access to Claude
+   - No need to "orchestrate" Claude
 
 ### Configuration Tools
 
@@ -85,11 +86,9 @@ All tools that analyze code now actually read files:
 - `code_review` - Uses FileManager for comprehensive review
 
 ### 2. **Model-Specific Prompts**
-Each model receives prompts tailored to its strengths:
-- Gemini: Leverages 1M context for codebase-wide analysis
-- O3: Architecture and system design focus
-- Claude Opus: Deep reasoning and complex debugging
-- Claude Sonnet: Practical implementation
+Each external model receives prompts tailored to its strengths:
+- **Gemini 2.5 Pro**: Leverages 1M context for codebase-wide analysis
+- **O3**: Architecture and system design focus
 
 ### 3. **Value-Add Features**
 - **Confidence Scoring**: Shows model confidence in responses
@@ -141,19 +140,41 @@ thinking_mode: "max"
 
 ## Verification
 
-Run the comprehensive test:
+Run the quick test:
 ```bash
-python test_all_mcp_tools.py
+./quick_test.sh
 ```
 
-This tests all 12 tools to ensure they're working properly.
+Or test individual components:
+```bash
+# Test REST API
+curl -X POST http://localhost:5050/mcp/get_orchestrator_status
+
+# Test with example script
+python examples/integration_example.py
+```
+
+## Network Access
+
+### REST API (Port 5050)
+```bash
+curl -X POST http://localhost:5050/mcp/orchestrate_task \
+  -H "Content-Type: application/json" \
+  -d '{"description": "Analyze this code"}'
+```
+
+### WebSocket (Port 8765)
+See `examples/integration_example.py` for WebSocket usage.
 
 ## Docker Deployment
 
 All tools are included in the Docker image:
 ```bash
-docker build -t mcp-orchestrator:enhanced .
-./deploy_mcp.sh
+# Deploy with network bridges
+./start_network_services.sh
+
+# Or standard MCP deployment
+./scripts/deploy.sh
 ```
 
-The enhanced MCP server includes all tools with their improvements.
+The MCP server includes all tools (except deprecated quick_claude) with external model integration.
